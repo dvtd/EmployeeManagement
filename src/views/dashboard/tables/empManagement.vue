@@ -46,7 +46,7 @@
                   <v-text-field
                     v-model="editedItem.fullName"
                     label="Employee Name"
-                    :rules="employeeNameRules"
+                    :rules="employeeFullNameRules"
                     :counter="100"
                     clearable
                     required
@@ -79,6 +79,19 @@
                     :counter="450"
                     clearable
                   />
+                </v-row>
+                <v-row>
+                  <v-select
+                    v-model="select"
+                    hint="Choose staff department"
+                    :items="_listOfDepartment"
+                    item-text="departmentName"
+                    item-value="id"
+                    label="Department"
+                    persistent-hint
+                    multiple
+                    @change="changeDepartment"
+                  ></v-select>
                 </v-row>
               </v-container>
             </v-card-text>
@@ -123,9 +136,14 @@ export default {
           (v && v.length < 100) ||
           'Employee name must be less than 100 characters'
       ],
-      phoneNumberRules: [
+      employeeFullNameRules: [
+        v => !!v || 'Employee Full name is required',
         v =>
-          (v && v.match(regex)) || 'Phone Number must be  format phone number'
+          (v && v.length < 100) ||
+          'Employee name must be less than 100 characters'
+      ],
+      phoneNumberRules: [
+        v => (v && v.match(regex)) || 'Phone Number must be format phone number'
       ],
       addressRules: [
         v => (v && v.length < 450) || 'Address must be less than 450 characters'
@@ -156,7 +174,7 @@ export default {
         email: '',
         phoneNumber: '',
         address: '',
-        department_staff: []
+        departments: []
       },
       defaultItem: {
         id: '',
@@ -165,13 +183,22 @@ export default {
         email: '',
         phoneNumber: '',
         address: '',
-        department_staff: []
-      }
+        departments: []
+      },
+      select: [],
+      items: [
+        { state: 'Florida', abbr: 'FL' },
+        { state: 'Georgia', abbr: 'GA' },
+        { state: 'Nebraska', abbr: 'NE' },
+        { state: 'California', abbr: 'CA' },
+        { state: 'New York', abbr: 'NY' }
+      ]
     }
   },
 
   computed: {
     ...mapGetters('employeeList', ['_getListOfEmployee']),
+    ...mapState('departmentList', ['_listOfDepartment']),
     ...mapState('employeeList', ['_listOfEmployee']),
     formTitle () {
       return this.editedIndex === -1 ? 'New Employee' : 'Edit Employee'
@@ -185,6 +212,8 @@ export default {
   },
   mounted () {
     this._getAllEmployee()
+    this._getAllDepartment()
+    console.log(this._listOfDepartment)
   },
 
   methods: {
@@ -194,7 +223,13 @@ export default {
       '_updateEmployee',
       '_deleteEmployee'
     ]),
+    ...mapActions('departmentList', ['_getAllDepartment']),
+
+    changeDepartment (item) {
+      this.editedItem.departments = item
+    },
     editItem (item) {
+      this.select = item.departments
       this.editedIndex = this._listOfEmployee.indexOf(item)
       this.editedItem = Object.assign({}, item)
       this.dialog = true

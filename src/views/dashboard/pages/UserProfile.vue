@@ -5,7 +5,7 @@
         <base-material-card>
           <template v-slot:heading>
             <div class="display-2 font-weight-light">
-              Edit Profile
+              Profile
             </div>
           </template>
 
@@ -34,11 +34,11 @@
                     type="number"
                   />
                 </v-col>
-                <v-col cols="12" class="text-right">
+                <!-- <v-col cols="12" class="text-right">
                   <v-btn color="success" class="mr-0">
                     Update Profile
                   </v-btn>
-                </v-col>
+                </v-col> -->
               </v-row>
             </v-container>
           </v-form>
